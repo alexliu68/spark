@@ -448,14 +448,14 @@ private[hive] object HiveQl {
                 // TODO: Actually, a user may mean tableName.columnName. Need to resolve this issue.
                 val (db, tableName) = extractDbNameTableName(nameParts.head)
                 DescribeCommand(
-                  UnresolvedRelation(db, tableName, None), extended.isDefined)
+                  UnresolvedRelation(None, db, tableName, None), extended.isDefined)
               case Token(".", dbName :: tableName :: colName :: Nil) =>
                 // It is describing a column with the format like "describe db.table column".
                 NativePlaceholder
               case tableName =>
                 // It is describing a table with the format like "describe table".
                 DescribeCommand(
-                  UnresolvedRelation(None, tableName.getText, None),
+                  UnresolvedRelation(None, None, tableName.getText, None),
                   extended.isDefined)
             }
           }
@@ -711,7 +711,7 @@ private[hive] object HiveQl {
           case Seq(databaseName, table) => (Some(databaseName), table)
       }
       val alias = aliasClause.map { case Token(a, Nil) => cleanIdentifier(a) }
-      val relation = UnresolvedRelation(db, tableName, alias)
+      val relation = UnresolvedRelation(None, db, tableName, alias)
 
       // Apply sampling if requested.
       (bucketSampleClause orElse splitSampleClause).map {
@@ -840,7 +840,8 @@ private[hive] object HiveQl {
           cleanIdentifier(key.toLowerCase) -> None
       }.toMap).getOrElse(Map.empty)
 
-      InsertIntoTable(UnresolvedRelation(db, tableName, None), partitionKeys, query, overwrite)
+      InsertIntoTable(
+        UnresolvedRelation(None, db, tableName, None), partitionKeys, query, overwrite)
 
     case a: ASTNode =>
       throw new NotImplementedError(s"No parse rules for:\n ${dumpTree(a).toString} ")

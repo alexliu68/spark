@@ -54,45 +54,45 @@ class AnalysisSuite extends FunSuite with BeforeAndAfter {
     assert(
       caseSensitiveAnalyze(
         Project(Seq(UnresolvedAttribute("TbL.a")),
-          UnresolvedRelation(None, "TaBlE", Some("TbL")))) ===
+          UnresolvedRelation(None, None, "TaBlE", Some("TbL")))) ===
         Project(testRelation.output, testRelation))
 
     val e = intercept[TreeNodeException[_]] {
       caseSensitiveAnalyze(
         Project(Seq(UnresolvedAttribute("tBl.a")),
-          UnresolvedRelation(None, "TaBlE", Some("TbL"))))
+          UnresolvedRelation(None, None, "TaBlE", Some("TbL"))))
     }
     assert(e.getMessage().toLowerCase.contains("unresolved"))
 
     assert(
       caseInsensitiveAnalyze(
         Project(Seq(UnresolvedAttribute("TbL.a")),
-          UnresolvedRelation(None, "TaBlE", Some("TbL")))) ===
+          UnresolvedRelation(None, None, "TaBlE", Some("TbL")))) ===
         Project(testRelation.output, testRelation))
 
     assert(
       caseInsensitiveAnalyze(
         Project(Seq(UnresolvedAttribute("tBl.a")),
-          UnresolvedRelation(None, "TaBlE", Some("TbL")))) ===
+          UnresolvedRelation(None, None, "TaBlE", Some("TbL")))) ===
         Project(testRelation.output, testRelation))
   }
 
   test("resolve relations") {
     val e = intercept[RuntimeException] {
-      caseSensitiveAnalyze(UnresolvedRelation(None, "tAbLe", None))
+      caseSensitiveAnalyze(UnresolvedRelation(None, None, "tAbLe", None))
     }
     assert(e.getMessage == "Table Not Found: tAbLe")
 
     assert(
-      caseSensitiveAnalyze(UnresolvedRelation(None, "TaBlE", None)) ===
+      caseSensitiveAnalyze(UnresolvedRelation(None, None, "TaBlE", None)) ===
         testRelation)
 
     assert(
-      caseInsensitiveAnalyze(UnresolvedRelation(None, "tAbLe", None)) ===
+      caseInsensitiveAnalyze(UnresolvedRelation(None, None, "tAbLe", None)) ===
         testRelation)
 
     assert(
-      caseInsensitiveAnalyze(UnresolvedRelation(None, "TaBlE", None)) ===
+      caseInsensitiveAnalyze(UnresolvedRelation(None, None, "TaBlE", None)) ===
         testRelation)
   }
 

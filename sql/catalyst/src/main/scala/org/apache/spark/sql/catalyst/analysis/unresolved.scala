@@ -34,6 +34,7 @@ class UnresolvedException[TreeType <: TreeNode[_]](tree: TreeType, function: Str
  * Holds the name of a relation that has yet to be looked up in a [[Catalog]].
  */
 case class UnresolvedRelation(
+    clusterName: Option[String],
     databaseName: Option[String],
     tableName: String,
     alias: Option[String] = None) extends LeafNode {

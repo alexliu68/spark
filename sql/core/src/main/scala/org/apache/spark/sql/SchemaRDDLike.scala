@@ -98,7 +98,8 @@ private[sql] trait SchemaRDDLike {
   @Experimental
   def insertInto(tableName: String, overwrite: Boolean): Unit =
     sqlContext.executePlan(
-      InsertIntoTable(UnresolvedRelation(None, tableName), Map.empty, logicalPlan, overwrite)).toRdd
+      InsertIntoTable(
+        UnresolvedRelation(None, None, tableName), Map.empty, logicalPlan, overwrite)).toRdd
 
   /**
    * :: Experimental ::

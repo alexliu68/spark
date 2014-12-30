@@ -31,6 +31,7 @@ trait Catalog {
   def tableExists(db: Option[String], tableName: String): Boolean
 
   def lookupRelation(
+    clusterName: Option[String],
     databaseName: Option[String],
     tableName: String,
     alias: Option[String] = None): LogicalPlan
@@ -93,6 +94,7 @@ class SimpleCatalog(val caseSensitive: Boolean) extends Catalog {
   }
 
   override def lookupRelation(
+      clusterName: Option[String],
       databaseName: Option[String],
       tableName: String,
       alias: Option[String] = None): LogicalPlan = {
@@ -126,6 +128,7 @@ trait OverrideCatalog extends Catalog {
   }
 
   abstract override def lookupRelation(
+    clusterName: Option[String],
     databaseName: Option[String],
     tableName: String,
     alias: Option[String] = None): LogicalPlan = {
@@ -138,7 +141,7 @@ trait OverrideCatalog extends Catalog {
     val withAlias =
       tableWithQualifers.map(r => alias.map(a => Subquery(a, r)).getOrElse(r))
 
-    withAlias.getOrElse(super.lookupRelation(dbName, tblName, alias))
+    withAlias.getOrElse(super.lookupRelation(None, dbName, tblName, alias))
   }
 
   override def registerTable(
@@ -172,6 +175,7 @@ object EmptyCatalog extends Catalog {
   }
 
   def lookupRelation(
+    clusterName: Option[String],
     databaseName: Option[String],
     tableName: String,
     alias: Option[String] = None) = {
