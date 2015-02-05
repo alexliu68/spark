@@ -274,10 +274,19 @@ private[hive] object HadoopTableReader extends HiveInspectors {
       mutableRow: MutableRow): Iterator[Row] = {
 
     val soi = deserializer.getObjectInspector().asInstanceOf[StructObjectInspector]
+    /*val (fieldRefs, fieldOrdinals) = nonPartitionKeyAttrs.filter {
+      attrPair => try {
+        soi.getStructFieldRef(attrPair._1.name)
+        true
+      } catch {
+        case _ => false
+      }
+    }.map { case (attr, ordinal) =>
+      soi.getStructFieldRef(attr.name) -> ordinal
+    }.unzip*/
     val (fieldRefs, fieldOrdinals) = nonPartitionKeyAttrs.map { case (attr, ordinal) =>
       soi.getStructFieldRef(attr.name) -> ordinal
     }.unzip
-
     // Builds specific unwrappers ahead of time according to object inspector types to avoid pattern
     // matching and branching costs per row.
     val unwrappers: Seq[(Any, MutableRow, Int) => Unit] = fieldRefs.map {

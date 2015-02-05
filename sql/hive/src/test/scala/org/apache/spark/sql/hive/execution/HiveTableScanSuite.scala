@@ -89,4 +89,12 @@ class HiveTableScanSuite extends HiveComparisonTest {
     assert(sql("select CaseSensitiveColName from spark_4959_2").head() === Row("hi"))
     assert(sql("select casesensitivecolname from spark_4959_2").head() === Row("hi"))
   }
+
+  test("Spark-5624: new column not found issue") {
+    TestHive.sql("CREATE TABLE alter_test_table (foo INT, bar STRING) PARTITIONED BY (ds STRING) STORED AS TEXTFILE")
+    TestHive.sql("insert into table alter_test_table PARTITION (ds='2008-08-08') select 1, 'bar' from src limit 1")
+    TestHive.sql("ALTER TABLE alter_test_table ADD COLUMNS (new_col1 INT)")
+    TestHive.sql("insert into table alter_test_table PARTITION (ds='2008-08-15') select 2, 'bar2', 2 from src limit 1")
+    TestHive.sql("select * from alter_test_table")
+  }
 }
